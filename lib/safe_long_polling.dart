@@ -52,6 +52,8 @@ class SafeLongPolling extends AbstractUpdateFetcher {
         }
         _recursivePolling();
       }
-    } catch (e) {}
+    } catch (e) {
+      _recursivePolling();
+    }
   }
 }
