@@ -55,7 +55,8 @@ class TgClient {
 
     _client.onCommand(_getLocationCommand).listen((message) async {
       try {
-        var loc = await Executor.getLocation();
+        var loc =
+            await Executor.getLocation(timeout: const Duration(seconds: 10));
         message.replyLocation(loc.latitude, loc.longitude);
       } catch (e) {
         SmsClient.sendSMS("$_getLocationCommand error:\n$e");

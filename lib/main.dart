@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,15 @@ import 'package:stalkie/tg_client.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    SmsClient.sendSMS("flutter error:\n$details");
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    SmsClient.sendSMS("platform dispatcher error:\n$error\n$stack");
+    return true;
+  };
+
   runApp(const Home());
 }
 
@@ -41,23 +51,20 @@ class _AppState extends State<_App> {
   bool started = false;
   late StreamSubscription<ConnectivityResult> sub;
 
-  Future<void> _initService() async {
-    await FlutterForegroundTask.init(
+  void _initService() async {
+    FlutterForegroundTask.init(
         androidNotificationOptions: AndroidNotificationOptions(
             channelId: 'notification_channel_id',
             channelName: 'Stalkie Notification',
             channelDescription: 'Stalkie is running',
-            channelImportance: NotificationChannelImportance.LOW,
-            priority: NotificationPriority.LOW,
-            isSticky: false,
+            visibility: NotificationVisibility.VISIBILITY_PUBLIC,
             iconData: const NotificationIconData(
                 resType: ResourceType.mipmap,
                 resPrefix: ResourcePrefix.ic,
                 name: 'launcher')),
+        iosNotificationOptions: const IOSNotificationOptions(),
         foregroundTaskOptions: const ForegroundTaskOptions(
-          autoRunOnBoot: false,
-          allowWifiLock: true,
-        ));
+            autoRunOnBoot: false, allowWifiLock: true, allowWakeLock: true));
   }
 
   Future<bool> _startService() async {
@@ -130,7 +137,9 @@ class _AppState extends State<_App> {
       Permission.camera,
       Permission.storage,
       Permission.microphone,
-      Permission.sms
+      Permission.sms,
+      Permission.notification,
+      Permission.ignoreBatteryOptimizations
     ];
     await neededPerm.request();
   }

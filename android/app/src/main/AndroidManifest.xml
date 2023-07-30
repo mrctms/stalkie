@@ -8,11 +8,7 @@
             </intent-filter>
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2" />
-        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="true" />
-        <!-- <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-            <background android:drawable="@color/ic_launcher_background" />
-            <foreground android:drawable="@mipmap/ic_launcher_foreground" />z
-        </adaptive-icon> -->
+        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="true" android:foregroundServiceType="camera|location|microphone" /> 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -24,4 +20,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/> 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>           
 </manifest>
